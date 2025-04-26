@@ -47,6 +47,7 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
+    
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
