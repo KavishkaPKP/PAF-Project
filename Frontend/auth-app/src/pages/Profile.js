@@ -1,6 +1,56 @@
 import { useEffect, useState } from 'react';
-import { Typography, Box, Avatar, Chip, CircularProgress, Alert } from '@mui/material';
+import { 
+  Typography, 
+  Box, 
+  Avatar, 
+  Chip, 
+  CircularProgress, 
+  Alert,
+  Paper,
+  Container,
+  Fade,
+  Divider
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import userService from '../api/users';
+import { Person, Email, Code, Info } from '@mui/icons-material';
+
+const ProfileContainer = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius * 2,
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(10px)',
+  boxShadow: theme.shadows[10],
+}));
+
+const ProfileHeader = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: theme.spacing(4),
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    textAlign: 'center',
+  },
+}));
+
+const UserAvatar = styled(Avatar)(({ theme }) => ({
+  width: 120,
+  height: 120,
+  marginRight: theme.spacing(4),
+  [theme.breakpoints.down('sm')]: {
+    marginRight: 0,
+    marginBottom: theme.spacing(2),
+  },
+}));
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: theme.spacing(2),
+  '& svg': {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -25,7 +75,7 @@ const Profile = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+        <CircularProgress size={60} thickness={4} />
       </Box>
     );
   }
@@ -33,49 +83,68 @@ const Profile = () => {
   if (error) {
     return (
       <Box sx={{ mt: 4 }}>
-        <Alert severity="error">{error}</Alert>
+        <Alert severity="error" variant="filled">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <Avatar
-          src={user?.profilePicture}
-          alt={user?.username}
-          sx={{ width: 100, height: 100, mr: 3 }}
-        />
-        <Box>
-          <Typography variant="h4" component="h1">
-            {user?.username}
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
-            {user?.email}
-          </Typography>
-        </Box>
-      </Box>
-      
-      <Typography variant="h6" gutterBottom>
-        About
-      </Typography>
-      <Typography paragraph sx={{ mb: 3 }}>
-        {user?.bio || 'No bio provided'}
-      </Typography>
-      
-      <Typography variant="h6" gutterBottom>
-        Skills
-      </Typography>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-        {user?.skills?.length > 0 ? (
-          user.skills.map((skill) => (
-            <Chip key={skill} label={skill} />
-          ))
-        ) : (
-          <Typography color="text.secondary">No skills added</Typography>
-        )}
-      </Box>
-    </Box>
+    <Fade in timeout={800}>
+      <Container maxWidth="md">
+        <ProfileContainer elevation={3}>
+          <ProfileHeader>
+            <UserAvatar
+              src={user?.profilePicture}
+              alt={user?.username}
+            />
+            <Box>
+              <Typography variant="h3" component="h1" gutterBottom>
+                {user?.username}
+              </Typography>
+              <Box display="flex" alignItems="center">
+                <Email color="action" sx={{ mr: 1 }} />
+                <Typography variant="subtitle1" color="text.secondary">
+                  {user?.email}
+                </Typography>
+              </Box>
+            </Box>
+          </ProfileHeader>
+          
+          <Divider sx={{ my: 3 }} />
+          
+          <Box mb={4}>
+            <SectionTitle variant="h5">
+              <Info /> About
+            </SectionTitle>
+            <Typography paragraph sx={{ pl: 4 }}>
+              {user?.bio || 'No bio provided'}
+            </Typography>
+          </Box>
+          
+          <Divider sx={{ my: 3 }} />
+          
+          <Box>
+            <SectionTitle variant="h5">
+              <Code /> Skills
+            </SectionTitle>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, pl: 4 }}>
+              {user?.skills?.length > 0 ? (
+                user.skills.map((skill) => (
+                  <Chip 
+                    key={skill} 
+                    label={skill} 
+                    color="primary"
+                    variant="outlined"
+                  />
+                ))
+              ) : (
+                <Typography color="text.secondary">No skills added</Typography>
+              )}
+            </Box>
+          </Box>
+        </ProfileContainer>
+      </Container>
+    </Fade>
   );
 };
 

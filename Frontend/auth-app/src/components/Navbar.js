@@ -1,41 +1,81 @@
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Button, IconButton, Avatar } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../utils/auth';
+import { styled } from '@mui/material/styles';
+import { Home, Person, Login, HowToReg, ExitToApp } from '@mui/icons-material';
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  backdropFilter: 'blur(10px)',
+  boxShadow: theme.shadows[4],
+}));
+
+const NavTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 700,
+  letterSpacing: 1,
+  display: 'flex',
+  alignItems: 'center',
+  '& svg': {
+    marginRight: theme.spacing(1),
+  },
+}));
+
+const NavButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(2),
+  fontWeight: 600,
+  '& svg': {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const user = isAuthenticated();
+
   return (
-    <AppBar position="static">
+    <StyledAppBar position="sticky">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        Skill Sharing App
-        </Typography>
-        <Button color="inherit" component={Link} to="/">
+        <NavTitle variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Home /> Skill Sharing App
+        </NavTitle>
+        
+        <NavButton color="inherit" component={Link} to="/" startIcon={<Home />}>
           Home
-        </Button>
-        {!isAuthenticated() ? (
+        </NavButton>
+        
+        {!user ? (
           <>
-            <Button color="inherit" component={Link} to="/login">
+            <NavButton color="inherit" component={Link} to="/login" startIcon={<Login />}>
               Login
-            </Button>
-            <Button color="inherit" component={Link} to="/register">
+            </NavButton>
+            <NavButton color="inherit" component={Link} to="/register" startIcon={<HowToReg />}>
               Register
-            </Button>
+            </NavButton>
           </>
         ) : (
           <>
-            <Button color="inherit" component={Link} to="/profile">
+            <NavButton color="inherit" component={Link} to="/profile" startIcon={<Person />}>
               Profile
-            </Button>
-            <Button color="inherit" onClick={() => {
-              localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME);
-              window.location.href = '/login';
-            }}>
-              Logout
-            </Button>
+            </NavButton>
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                localStorage.removeItem(process.env.REACT_APP_TOKEN_NAME);
+                navigate('/login');
+              }}
+              sx={{ ml: 1 }}
+            >
+              <ExitToApp />
+            </IconButton>
+            <Avatar 
+              src={user.profilePicture} 
+              alt={user.username} 
+              sx={{ width: 40, height: 40, ml: 2 }}
+            />
           </>
         )}
       </Toolbar>
-    </AppBar>
+    </StyledAppBar>
   );
 };
 
